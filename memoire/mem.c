@@ -25,6 +25,7 @@
 struct allocator_header {
         size_t memory_size;
 	mem_fit_function_t *fit;
+	struct fb* first_free;
 };
 
 /* La seule variable globale autorisée
@@ -64,8 +65,15 @@ void mem_init(void* mem, size_t taille)
 	 */
 	assert(mem == get_system_memory_addr());
 	assert(taille == get_system_memory_size());
-	/* ... */
+	// TODO 
 	mem_fit(&mem_fit_first);
+	get_header()->memory_size = taille;
+
+	struct fb * first_fb;
+	first_fb = (struct fb *) (get_header()+1);
+	first_fb->size = get_system_memory_size()-sizeof(struct allocator_header) - 2*sizeof(int);
+	first_fb->next = NULL;
+	get_header()->first_free = first_fb;
 }
 
 void mem_show(void (*print)(void *, size_t, int)) {
