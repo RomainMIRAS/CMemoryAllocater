@@ -78,10 +78,21 @@ void mem_init(void* mem, size_t taille)
 
 void mem_show(void (*print)(void *, size_t, int)) {
 	/* ... */
-	while (/* ... */ 0) {
-		/* ... */
-		print(/* ... */NULL, /* ... */0, /* ... */0);
-		/* ... */
+	void* Current = get_header()+1;
+	int cpt_size = get_header()->memory_size;
+	int bool_zl = 0; // false, la zone est occupée par défaut
+	struct fb* Current_pt = get_header()->first_free;
+	while ( cpt_size < get_header()->memory_size) {
+		if (Current==Current_pt){
+			bool_zl = 1; //true la zone est libre donc le bool est mis à jour
+			print(Current_pt, Current_pt->size, bool_zl);
+		}else{
+			print(Current, Current+1, bool_zl);
+		}
+		
+		cpt_size++;
+		Current = Current + (int)(Current+1);
+		if (bool_zl)Current_pt = Current_pt->next;
 	}
 }
 
