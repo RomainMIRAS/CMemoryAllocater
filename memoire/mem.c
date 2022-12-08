@@ -81,16 +81,19 @@ void mem_show(void (*print)(void *, size_t, int)) {
 
 	struct fb* Current_free = get_header()->first_free;
 	void* Current = get_header()+1;
+	size_t size = 0;	
 
 	while(Current_free != NULL) {
 		while(Current != Current_free) {
-			print(Current, *Current, 1);
-			Current = *(Current+Current->size);
+			size = *((size_t *)Current);
+			print(Current,size, 0);
+			Current = Current+size+sizeof(size_t);
 		}
-		print(Current_free, Current->size, 1);
-		Current_free ⁼ Current_free->next;
+		size = *((int *)Current);
+		print(Current_free, size, 1);
+		Current_free = Current_free->next;
 	}
-	print(Current_free, Current_free->size, 0);
+	print(Current_free, Current_free->size, 1);
 
 }
 

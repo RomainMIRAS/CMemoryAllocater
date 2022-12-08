@@ -16,6 +16,15 @@ int main(int argc, char *argv[]) {
 		alloc_max(get_memory_size());
 	}
 
-	// TEST OK
+	// debug("Initializing memory with parameters\n");
+	// mem_init(get_memory_adr(), 0);
+
+
+	// mem_init(get_memory_adr(), get_memory_size());
+	// assert(header->size == 0);
+
+	// Test mem_show avec une fonction qui affiche les zones
+	// mem_show(afficher_zone);
+
 	return 0;
 }
