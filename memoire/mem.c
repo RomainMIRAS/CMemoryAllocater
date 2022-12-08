@@ -59,6 +59,20 @@ struct fb
 	struct fb *next;
 };
 
+struct fb *get_fb_prev(struct fb *fb)
+{
+
+	struct fb *current = get_header()->first_free;
+
+	while (current != NULL && current->next != fb)
+	{
+		current = current->next;
+	}
+
+	return current;
+}
+
+
 void mem_init(void *mem, size_t taille)
 {
 	memory_addr = mem;
@@ -112,16 +126,10 @@ void *mem_alloc(size_t taille)
 	if (fb == NULL)
 		return NULL; // Si Aucun Free block dispo
 
-	if (fb->size == taille)
-	{
-		return NULL;
-	}
-	else
-	{
-		return NULL;
-	}
-
-	return NULL;
+	struct fb *fb_prev = get_fb_prev(fb);
+	fb_prev->next = fb->next;
+	fb->size = taille;
+	return fb+sizeof(size_t);
 }
 
 void mem_free(void *mem)
@@ -194,17 +202,4 @@ struct fb *mem_fit_worst(struct fb *list, size_t size)
 		return NULL;
 	}
 	return Max;
-}
-
-struct fb *get_fb_prev(struct fb *fb)
-{
-
-	struct fb *current = get_header()->first_free;
-
-	while (current != NULL && current->next != fb)
-	{
-		current = current->next;
-	}
-
-	return current;
 }
