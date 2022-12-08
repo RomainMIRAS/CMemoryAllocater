@@ -143,7 +143,7 @@ size_t mem_get_size(void *zone) {
  * autres stratégies d'allocation
  */
 struct fb* mem_fit_best(struct fb *list, size_t size) {
-	struct fb* best = list->size;
+	struct fb* best = list;
 	while (list != NULL) {
 		list = list->next;
 		if (size <= best->size && best->size < list->size) {
