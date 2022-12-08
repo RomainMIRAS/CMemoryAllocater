@@ -101,10 +101,8 @@ void mem_fit(mem_fit_function_t *f) {
 }
 
 void *mem_alloc(size_t taille) {
-	/* ... */
-	__attribute__((unused)) /* juste pour que gcc compile ce squelette avec -Werror */
-	struct fb *fb=get_header()->fit(/*...*/NULL, /*...*/0);
-	/* ... */
+	struct fb *fb=get_header()->fit(get_header()->first_free, taille);
+	
 	return NULL;
 }
 
