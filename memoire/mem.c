@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdio.h>
 
 /* Définition de l'alignement recherché
  * Avec gcc, on peut utiliser __BIGGEST_ALIGNMENT__
@@ -23,7 +24,7 @@
    Elle peut bien évidemment être complétée
 */
 struct allocator_header {
-        size_t memory_size;
+    size_t memory_size;
 	mem_fit_function_t *fit;
 	struct fb* first_free;
 };
@@ -71,7 +72,7 @@ void mem_init(void* mem, size_t taille)
 
 	struct fb * first_fb;
 	first_fb = (struct fb *) (get_header()+1);
-	first_fb->size = get_system_memory_size()-sizeof(struct allocator_header) - 2*sizeof(int);
+	first_fb->size = get_system_memory_size()-sizeof(struct allocator_header) - sizeof(size_t) - sizeof(struct fb*);
 	first_fb->next = NULL;
 	get_header()->first_free = first_fb;
 }
@@ -93,8 +94,6 @@ void mem_show(void (*print)(void *, size_t, int)) {
 		print(Current_free, size, 1);
 		Current_free = Current_free->next;
 	}
-	print(Current_free, Current_free->size, 1);
-
 }
 
 void mem_fit(mem_fit_function_t *f) {
