@@ -114,6 +114,13 @@ void mem_free(void* mem) {
 
 
 struct fb* mem_fit_first(struct fb *list, size_t size) {
+	struct fb* Current = list;
+	while(Current != NULL) {
+		if(Current->size >= size) {
+			return Current;
+		}
+		Current = Current->next;
+	}
 	return NULL;
 }
 
