@@ -72,7 +72,7 @@ void mem_init(void* mem, size_t taille)
 
 	struct fb * first_fb;
 	first_fb = (struct fb *) (get_header()+1);
-	first_fb->size = get_system_memory_size()-sizeof(struct allocator_header) - sizeof(size_t) - sizeof(struct fb*);
+	first_fb->size = get_system_memory_size()-sizeof(struct allocator_header) - sizeof(size_t);
 	first_fb->next = NULL;
 	get_header()->first_free = first_fb;
 }
@@ -101,7 +101,7 @@ void mem_fit(mem_fit_function_t *f) {
 }
 
 void *mem_alloc(size_t taille) {
-	struct fb *fb=get_header()->fit(get_header()->first_free, taille);
+	// struct fb *fb=get_header()->fit(get_header()->first_free, taille);
 	
 	return NULL;
 }
