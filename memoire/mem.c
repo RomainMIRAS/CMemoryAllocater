@@ -127,9 +127,19 @@ void *mem_alloc(size_t taille)
 		return NULL; // Si Aucun Free block dispo
 
 	struct fb *fb_prev = get_fb_prev(fb);
-	fb_prev->next = fb->next;
+
+	struct fb *new_fb = ((void*)fb)+taille+sizeof(size_t);
+
+	if (fb_prev == NULL) {
+		get_header()->first_free = new_fb;
+	} else {
+		fb_prev->next = new_fb;
+	}
+	new_fb->size = fb->size-taille-sizeof(size_t);
+	new_fb->next = fb->next;
+
 	fb->size = taille;
-	return fb+sizeof(size_t);
+	return ((void*)fb)+sizeof(size_t);
 }
 
 void mem_free(void *mem)
