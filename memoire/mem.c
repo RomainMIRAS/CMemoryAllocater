@@ -129,7 +129,7 @@ size_t mem_get_size(void *zone) {
 
 	/* la valeur retournée doit être la taille maximale que
 	 * l'utilisateur peut utiliser dans cette zone */
-	return 0;
+	return *((size_t *)zone-sizeof(get_header()->memory_size)); //fépaça attention non accurate
 }
 
 /* Fonctions facultatives
