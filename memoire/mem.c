@@ -140,5 +140,18 @@ struct fb* mem_fit_best(struct fb *list, size_t size) {
 }
 
 struct fb* mem_fit_worst(struct fb *list, size_t size) {
-	return NULL;
+	struct fb* Max = list;
+	// Parcours des zones libres
+	while(list!=NULL){
+		// On récupère celle qui a la taille la plus grande
+		if (list->size > Max->size){
+			Max = list;
+		}
+		list = list->next;
+	}
+	// Si cette taille est inférieure à celle voulu on return NULL
+	if (Max->size >= size){
+		return NULL;
+	}
+	return Max;
 }
