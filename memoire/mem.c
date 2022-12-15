@@ -101,18 +101,30 @@ void mem_show(void (*print)(void *, size_t, int))
 	void *Current = get_header() + 1;
 	size_t size = 0;
 
-	while (Current_free != NULL)
+	if (Current_free == NULL) // Si aucun free block
 	{
-		while (Current != Current_free)
+		while (Current < get_system_memory_addr() + get_system_memory_size())
 		{
 			size = *((size_t *)Current);
 			print(Current, size, 0);
 			Current = Current + size + sizeof(size_t);
 		}
-		size = *((int *)Current);
-		print(Current_free, size, 1);
-		Current_free = Current_free->next;
+	} else{ // Si au moins un free block
+			while (Current_free != NULL) // Tant qu'il y a des free blocks
+			{
+				while (Current != Current_free) // Tant qu'on est pas sur le free block
+				{
+					size = *((size_t *)Current);
+					print(Current, size, 0);
+					Current = Current + size + sizeof(size_t);
+				}
+				size = *((int *)Current);
+				print(Current_free, size, 1);
+				Current_free = Current_free->next;
+			}
 	}
+
+
 }
 
 void mem_fit(mem_fit_function_t *f)
@@ -128,17 +140,17 @@ void *mem_alloc(size_t taille)
 
 	struct fb *fb_prev = get_fb_prev(fb);
 
-	struct fb *new_fb = ((void*)fb)+taille+sizeof(size_t);
+		struct fb *new_fb = ((void*)fb)+taille+sizeof(size_t);
 
-	if (fb_prev == NULL) {
+		if (fb_prev == NULL) {
 		get_header()->first_free = new_fb;
-	} else {
-		fb_prev->next = new_fb;
-	}
-	new_fb->size = fb->size-taille-sizeof(size_t);
-	new_fb->next = fb->next;
+		} else {
+			fb_prev->next = new_fb;
+		}
+		new_fb->size = fb->size-taille-sizeof(size_t);
+		new_fb->next = fb->next;
 
-	fb->size = taille;
+		fb->size = taille;
 	return ((void*)fb)+sizeof(size_t);
 }
 
