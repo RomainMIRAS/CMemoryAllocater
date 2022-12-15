@@ -182,6 +182,7 @@ void mem_free(void *mem)
 	
 	struct fb* current = get_header()->first_free;
 
+	// TODO FIX ME
 	while (current != NULL && ((void *)current) < mem) {
 		current = current->next;
 	}
