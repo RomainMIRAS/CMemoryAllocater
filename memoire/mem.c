@@ -168,7 +168,8 @@ void *mem_alloc(size_t taille)
 
 void mem_free(void *mem)
 {
-	size_t taille_zone = (size_t) (mem - sizeof(size_t));
+	// Taille de la future zone libre
+	size_t* taille_zone = (size_t*) (mem - sizeof(size_t));
 	
 	struct fb* current = get_header()->first_free;
 
@@ -178,7 +179,7 @@ void mem_free(void *mem)
 
 	struct fb* prev = get_fb_prev(current);
 
-	struct fb* new_fb = (struct fb*) mem - sizeof(size_t);
+	struct fb* new_fb = (struct fb*) (mem - sizeof(size_t));
 
 	if (prev == NULL) {
 		get_header()->first_free = new_fb;
@@ -187,19 +188,22 @@ void mem_free(void *mem)
 	}
 
 	new_fb->next = current;
-	new_fb->size = taille_zone + sizeof(size_t);
+	new_fb->size = taille_zone;
 
 	// Fusion avec le next free block si il est contigu
-	if (current != NULL && (void *)current == mem + taille_zone) {
+	if (current != NULL && (void *)current == mem + *taille_zone) {
 		new_fb->size += current->size + sizeof(size_t);
 		new_fb->next = current->next;
 	}
 
 	// Fusion avec le previous free block si il est contigu
 	if (prev != NULL && (void *)prev + prev->size + sizeof(size_t) == mem) {
-		prev->size += taille_zone + sizeof(size_t);
+		prev->size += *taille_zone + sizeof(size_t);
 		prev->next = new_fb->next;
 	}
+
+	printf("Taille zone : %ld\n", *taille_zone);
+
 }
 
 struct fb *mem_fit_first(struct fb *list, size_t size)
