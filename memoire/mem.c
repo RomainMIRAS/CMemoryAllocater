@@ -140,23 +140,29 @@ void *mem_alloc(size_t taille)
 
 	struct fb *fb_prev = get_fb_prev(fb);
 
-	int espaceRestant = fb->size-taille-sizeof(size_t);
+	int espaceRestant = fb->size-taille-sizeof(size_t) + 8;
 
-		struct fb *new_fb = ((void*)fb)+taille+sizeof(size_t);
+	if (espaceRestant == 0) {
 
 		if (fb_prev == NULL) {
-			if (espaceRestant > 0) {
-				get_header()->first_free = new_fb;
-			} else {
-				get_header()->first_free = NULL;
-			}
+			get_header()->first_free = NULL;
 		
 		} else {
-			if (espaceRestant > 0) {
-				fb_prev->next = new_fb;
-			} else {
-				fb_prev->next = fb->next;
-			}
+			fb_prev->next = fb->next;
+			
+		}
+
+		fb->size = taille;
+	return ((void*)fb)+sizeof(size_t);
+
+	} else {
+struct fb *new_fb = ((void*)fb)+taille+sizeof(size_t);
+
+		if (fb_prev == NULL) {
+			get_header()->first_free = new_fb;
+		
+		} else {
+			fb_prev->next = new_fb;
 			
 		}
 		new_fb->size = fb->size-taille-sizeof(size_t);
@@ -164,6 +170,9 @@ void *mem_alloc(size_t taille)
 
 		fb->size = taille;
 	return ((void*)fb)+sizeof(size_t);
+	}
+
+		
 }
 
 void mem_free(void *mem)
