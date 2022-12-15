@@ -188,7 +188,7 @@ void mem_free(void *mem)
 	}
 
 	new_fb->next = current;
-	new_fb->size = taille_zone;
+	new_fb->size = *taille_zone;
 
 	// Fusion avec le next free block si il est contigu
 	if (current != NULL && (void *)current == mem + *taille_zone) {
