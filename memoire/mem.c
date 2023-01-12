@@ -133,6 +133,10 @@ void mem_fit(mem_fit_function_t *f)
 
 void *mem_alloc(size_t taille)
 {
+	if (taille%8 != 0) {
+		taille = 8-(taille%8) + taille;
+	}
+
 	struct fb *fb = get_header()->fit(get_header()->first_free, taille);
 	if (fb == NULL)
 		return NULL; // Si Aucun Free block dispo
