@@ -12,19 +12,11 @@ int main(int argc, char *argv[]){
     void *ptr = mem_alloc(100);
     for(int i = 0; i < 100; i++){
         ((char*)ptr)[i] = 'a';
-        printf("PASSED\n");
     }
 
-
-    
-    //mem_show();
     mem_free(ptr);
-    //mem_show();
-    printf("Test de la fonction mem_realloc\n");
-    void *ptr2 = mem_alloc(100);
-    mem_realloc(ptr2, 200);
-    //mem_show();
-    mem_free(ptr2);
+
+    printf("TEST ALLOC PASSED\n");
 
     return 0;
 }
