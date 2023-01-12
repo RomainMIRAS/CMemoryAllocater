@@ -9,7 +9,7 @@ CFLAGS+= -DDEBUG
 # pour tester avec ls
 CFLAGS+= -fPIC
 LDFLAGS= $(HOST32)
-TESTS+=test_init
+TESTS+=test_init test_malloc
 PROGRAMS=memshell $(TESTS)
 
 .PHONY: clean all test_ls
