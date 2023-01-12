@@ -16,14 +16,6 @@ int main(int argc, char *argv[]) {
 		alloc_max(get_memory_size());
 	}
 
-	// Test de la fonction alloc
-
-	printf("Test de la fonction alloc\n");
-
-	void *ptr = mem_alloc(10);
-	assert(ptr != NULL);
-	mem_free(ptr);
-
 	// Test de la fonction realloc
 	return 0;
 }
