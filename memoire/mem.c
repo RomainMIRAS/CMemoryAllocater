@@ -82,7 +82,7 @@ void mem_init(void *mem, size_t taille)
 	assert(mem == get_system_memory_addr());
 	assert(taille == get_system_memory_size());
 	// TODO
-	mem_fit(&mem_fit_first);
+	mem_fit(&mem_fit_worst);
 	get_header()->memory_size = taille;
 
 	struct fb *first_fb;
@@ -257,35 +257,37 @@ size_t mem_get_size(void *zone)
  */
 struct fb *mem_fit_best(struct fb *list, size_t size)
 {
-	struct fb *best = list;
-	while (list != NULL)
+	struct fb *Current = list;
+	size_t min_size = list->size;
+	struct fb * min = list;
+
+	while (Current != NULL)
 	{
-		list = list->next;
-		if (size <= best->size && best->size < list->size)
+		if (Current->size < min_size)
 		{
-			best = list;
+			min_size = Current->size;
+			min = Current;
 		}
+		Current = Current->next;
 	}
-	return best->size > size ? best : NULL;
+	return min;
 }
 
 struct fb *mem_fit_worst(struct fb *list, size_t size)
 {
-	struct fb *Max = list;
-	// Parcours des zones libres
-	while (list != NULL)
+	struct fb *Current = list;
+	size_t max_size = list->size;
+	struct fb * max_fb = list;
+
+	while (Current != NULL)
 	{
-		// On récupère celle qui a la taille la plus grande
-		if (list->size > Max->size)
+		if (Current->size > max_size)
 		{
-			Max = list;
+			max_size = Current->size;
+			max_fb = Current;
 		}
-		list = list->next;
+		Current = Current->next;
 	}
-	// Si cette taille est inférieure à celle voulu on return NULL
-	if (Max->size >= size)
-	{
-		return NULL;
-	}
-	return Max;
+	return max_fb;
+
 }
