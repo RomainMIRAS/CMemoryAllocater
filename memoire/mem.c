@@ -82,7 +82,7 @@ void mem_init(void *mem, size_t taille)
 	assert(mem == get_system_memory_addr());
 	assert(taille == get_system_memory_size());
 	// TODO
-	mem_fit(&mem_fit_first);
+	mem_fit(&mem_fit_worst);
 	get_header()->memory_size = taille;
 
 	struct fb *first_fb;
@@ -113,7 +113,7 @@ void mem_show(void (*print)(void *, size_t, int))
 	{								 // Si au moins un free block
 		while (Current_free != NULL) // Tant qu'il y a des free blocks
 		{
-			while (Current != Current_free) // Tant qu'on est pas sur le free block
+			while (Current != (void *)Current_free) // Tant qu'on est pas sur le free block
 			{
 				size = *((size_t *)Current);
 				print(Current, size, 0);
@@ -122,6 +122,7 @@ void mem_show(void (*print)(void *, size_t, int))
 			size = *((int *)Current);
 			print(Current_free, size, 1);
 			Current_free = Current_free->next;
+			Current = Current + size + sizeof(size_t);
 		}
 	}
 }
@@ -186,6 +187,21 @@ void *mem_alloc(size_t taille)
 	}
 }
 
+// Actualise la mémoire pour la fusion des zones
+void refresh_mem(){
+	struct fb *current = get_header()->first_free;
+	while(current != NULL){
+		// fusion
+		if (current->next != NULL && (void *)current + current->size + sizeof(size_t) == (void *)current->next){
+			current->size += current->next->size + sizeof(size_t);
+			current->next = current->next->next;
+		}  else {
+			current = current->next;
+		}
+	}
+
+}
+
 void mem_free(void *mem)
 {
 	// Taille de la future zone libre
@@ -230,6 +246,9 @@ void mem_free(void *mem)
 	}
 
 	printf("Taille zone : %ld\n", *taille_zone);
+	
+	// Pour la fusion des zones libres
+	refresh_mem();
 }
 
 struct fb *mem_fit_first(struct fb *list, size_t size)
@@ -267,35 +286,37 @@ size_t mem_get_size(void *zone)
  */
 struct fb *mem_fit_best(struct fb *list, size_t size)
 {
-	struct fb *best = list;
-	while (list != NULL)
+	struct fb *Current = list;
+	size_t min_size = list->size;
+	struct fb * min = list;
+
+	while (Current != NULL)
 	{
-		list = list->next;
-		if (size <= best->size && best->size < list->size)
+		if (Current->size < min_size)
 		{
-			best = list;
+			min_size = Current->size;
+			min = Current;
 		}
+		Current = Current->next;
 	}
-	return best->size > size ? best : NULL;
+	return min;
 }
 
 struct fb *mem_fit_worst(struct fb *list, size_t size)
 {
-	struct fb *Max = list;
-	// Parcours des zones libres
-	while (list != NULL)
+	struct fb *Current = list;
+	size_t max_size = list->size;
+	struct fb * max_fb = list;
+
+	while (Current != NULL)
 	{
-		// On récupère celle qui a la taille la plus grande
-		if (list->size > Max->size)
+		if (Current->size > max_size)
 		{
-			Max = list;
+			max_size = Current->size;
+			max_fb = Current;
 		}
-		list = list->next;
+		Current = Current->next;
 	}
-	// Si cette taille est inférieure à celle voulu on return NULL
-	if (Max->size >= size)
-	{
-		return NULL;
-	}
-	return Max;
+	return max_fb;
+
 }
