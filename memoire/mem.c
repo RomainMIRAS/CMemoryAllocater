@@ -244,8 +244,6 @@ void mem_free(void *mem)
 		prev->size += *taille_zone + sizeof(size_t);
 		prev->next = new_fb->next;
 	}
-
-	printf("Taille zone : %ld\n", *taille_zone);
 	
 	// Pour la fusion des zones libres
 	refresh_mem();
