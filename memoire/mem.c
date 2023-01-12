@@ -146,7 +146,7 @@ void *mem_alloc(size_t taille)
 
 		if (fb_prev == NULL)
 		{
-			get_header()->first_free = NULL;
+			get_header()->first_free = fb->next;
 		}
 		else
 		{
