@@ -113,7 +113,7 @@ void mem_show(void (*print)(void *, size_t, int))
 	{								 // Si au moins un free block
 		while (Current_free != NULL) // Tant qu'il y a des free blocks
 		{
-			while (Current != Current_free) // Tant qu'on est pas sur le free block
+			while (Current != (void *)Current_free) // Tant qu'on est pas sur le free block
 			{
 				size = *((size_t *)Current);
 				print(Current, size, 0);
@@ -122,6 +122,7 @@ void mem_show(void (*print)(void *, size_t, int))
 			size = *((int *)Current);
 			print(Current_free, size, 1);
 			Current_free = Current_free->next;
+			Current = Current + size + sizeof(size_t);
 		}
 	}
 }
@@ -180,6 +181,21 @@ void *mem_alloc(size_t taille)
 	}
 }
 
+// Actualise la mémoire pour la fusion des zones
+void refresh_mem(){
+	struct fb *current = get_header()->first_free;
+	while(current != NULL){
+		// fusion
+		if (current->next != NULL && (void *)current + current->size + sizeof(size_t) == (void *)current->next){
+			current->size += current->next->size + sizeof(size_t);
+			current->next = current->next->next;
+		}  else {
+			current = current->next;
+		}
+	}
+
+}
+
 void mem_free(void *mem)
 {
 	// Taille de la future zone libre
@@ -224,6 +240,9 @@ void mem_free(void *mem)
 	}
 
 	printf("Taille zone : %ld\n", *taille_zone);
+	
+	// Pour la fusion des zones libres
+	refresh_mem();
 }
 
 struct fb *mem_fit_first(struct fb *list, size_t size)

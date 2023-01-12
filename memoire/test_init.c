@@ -16,15 +16,14 @@ int main(int argc, char *argv[]) {
 		alloc_max(get_memory_size());
 	}
 
-	// debug("Initializing memory with parameters\n");
-	// mem_init(get_memory_adr(), 0);
+	// Test de la fonction alloc
 
+	printf("Test de la fonction alloc\n");
 
-	// mem_init(get_memory_adr(), get_memory_size());
-	// assert(header->size == 0);
+	void *ptr = mem_alloc(10);
+	assert(ptr != NULL);
+	mem_free(ptr);
 
-	// Test mem_show avec une fonction qui affiche les zones
-	// mem_show(afficher_zone);
-
+	// Test de la fonction realloc
 	return 0;
 }
