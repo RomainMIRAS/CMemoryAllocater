@@ -131,11 +131,14 @@ void mem_fit(mem_fit_function_t *f)
 	get_header()->fit = f;
 }
 
+size_t align(size_t taille) {
+	return taille%8 == 0 ? taille : 8-(taille%8) + taille;
+}
+
+
 void *mem_alloc(size_t taille)
 {
-	if (taille%8 != 0) {
-		taille = 8-(taille%8) + taille;
-	}
+	taille = align(taille);
 
 	struct fb *fb = get_header()->fit(get_header()->first_free, taille);
 	if (fb == NULL)
@@ -162,6 +165,9 @@ void *mem_alloc(size_t taille)
 	}
 	else
 	{
+		if (espaceRestant < sizeof(fb) + (int)8) {
+			taille += espaceRestant;
+		}
 		struct fb *new_fb = ((void *)fb) + taille + sizeof(size_t);
 
 		if (fb_prev == NULL)
