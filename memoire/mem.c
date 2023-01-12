@@ -82,7 +82,7 @@ void mem_init(void *mem, size_t taille)
 	assert(mem == get_system_memory_addr());
 	assert(taille == get_system_memory_size());
 	// TODO
-	mem_fit(&mem_fit_worst);
+	mem_fit(&mem_fit_first);
 	get_header()->memory_size = taille;
 
 	struct fb *first_fb;
