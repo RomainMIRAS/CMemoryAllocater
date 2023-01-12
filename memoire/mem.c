@@ -149,6 +149,11 @@ void *mem_alloc(size_t taille)
 
 	int espaceRestant = fb->size - taille - sizeof(size_t) + 8;
 
+	if (espaceRestant < sizeof(fb) + (size_t)8) {
+			taille += espaceRestant;
+			espaceRestant = 0;
+	}
+
 	if (espaceRestant == 0)
 	{
 
@@ -166,9 +171,6 @@ void *mem_alloc(size_t taille)
 	}
 	else
 	{
-		if (espaceRestant < sizeof(fb) + (int)8) {
-			taille += espaceRestant;
-		}
 		struct fb *new_fb = ((void *)fb) + taille + sizeof(size_t);
 
 		if (fb_prev == NULL)
