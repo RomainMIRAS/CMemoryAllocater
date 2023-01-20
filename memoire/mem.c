@@ -132,14 +132,14 @@ void mem_fit(mem_fit_function_t *f)
 	get_header()->fit = f;
 }
 
-size_t align(size_t taille) {
-	return taille%8 == 0 ? taille : 8-(taille%8) + taille;
+size_t align(size_t taille) { //Fonction qui gère l'alignement
+	return taille%ALIGNMENT == 0 ? taille : ALIGNMENT-(taille%ALIGNMENT) + taille;
 }
 
 
 void *mem_alloc(size_t taille)
 {
-	taille = align(taille);
+	taille = align(taille); // On gère l'alignement
 
 	struct fb *fb = get_header()->fit(get_header()->first_free, taille);
 	if (fb == NULL)
@@ -149,19 +149,19 @@ void *mem_alloc(size_t taille)
 
 	int espaceRestant = fb->size - taille - sizeof(size_t) + 8;
 
-	if (espaceRestant < sizeof(fb) + (size_t)8) {
+	if (espaceRestant < sizeof(fb) + (size_t)8) { //On gère le cas ou l'insertion d'un bloc rendrais la zone libre trop petite pour acceuillir un nouveau bloc
 			taille += espaceRestant;
 			espaceRestant = 0;
 	}
 
-	if (espaceRestant == 0)
+	if (espaceRestant == 0) // Si on insère un bloc qui fait exactement la taille de la zone libre
 	{
 
-		if (fb_prev == NULL)
+		if (fb_prev == NULL) // Si il n'y a pas de zone libre avant cette dans laquelle on insère
 		{
 			get_header()->first_free = fb->next;
 		}
-		else
+		else // Sinon si il y a une zone libre avant celle ou on insère
 		{
 			fb_prev->next = fb->next;
 		}
@@ -169,19 +169,19 @@ void *mem_alloc(size_t taille)
 		fb->size = taille;
 		return ((void *)fb) + sizeof(size_t);
 	}
-	else
+	else // Si le bloc qu'ont insère ne fait pas exactement la taille de la zone libre
 	{
 		struct fb *new_fb = ((void *)fb) + taille + sizeof(size_t);
 
-		if (fb_prev == NULL)
+		if (fb_prev == NULL) //Si il n'y a pas de zone libre avant celle dans laquelle on insère
 		{
 			get_header()->first_free = new_fb;
 		}
-		else
+		else //Si il y a une zone libre avant celle dans laquelle on insère
 		{
 			fb_prev->next = new_fb;
 		}
-		new_fb->size = fb->size - taille - sizeof(size_t);
+		new_fb->size = fb->size - taille - sizeof(size_t); //On crée une nouvelle zone libre de la taille restante après l'insertion
 		new_fb->next = fb->next;
 
 		fb->size = taille;
