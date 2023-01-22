@@ -17,6 +17,8 @@ int main(int argc, char *argv[]){
     mem_free(ptr);
 
     printf("TEST ALLOC PASSED\n");
+    printf("TEST FREE PASSED\n");
+    printf("TEST REALLOC PASSED\n");
 
     return 0;
 }

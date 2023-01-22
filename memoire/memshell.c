@@ -26,8 +26,11 @@ void aide()
 
 void afficher_zone(void *adresse, size_t taille, int free)
 {
-  printf("Zone %s, Adresse : %lu, Taille : %lu\n", free?"libre":"occupee",
-         adresse - get_memory_adr(), (unsigned long) taille);
+  if (free == 0){
+    printf("Zone occupee, Adresse : %lu - Adresse Utilisateur : %lu, Taille : %lu\n", adresse - get_memory_adr(), adresse - get_memory_adr() + 8, (unsigned long) taille);
+  } else {
+  printf("Zone libre, Adresse : %lu, Taille : %lu\n", adresse - get_memory_adr(), (unsigned long) taille);
+  }
 }
 
 void afficher_zone_libre(void *adresse, size_t taille, int free)
