@@ -12,7 +12,11 @@ Ci-dessous les schémas de notre implémentation. La mémoire est organisée en 
 
 ## Les implémentations
 
-Pour la fonction mem_show, l’algorithme consiste à afficher le contenu de la mémoire tant que celle-ci ne correspond pas à un Free Block et quand c’est le cas, d’aller directement à la fin de celle-ci et recommencer. La fonction mem_init initialise le HEAD global et crée le premier Free Block dont la taille correspond à l’espace global de mémoire que l’on a choisie moins la place que prend le HEAD et la métadonnée size. Nous avons codé une fonction get_fb_prev(fb) qui prend en paramètre un Free Block et renvoie le précédent dans la chaine ou NULL si c’est la tête. Nous l’utilisons dans les fonctions mem_alloc et mem_free. Pour les tests, nous avons utiliser memshell. Voici plusieurs jeux de tests :
+Pour la fonction mem_show, l’algorithme consiste à afficher le contenu de la mémoire tant que celle-ci ne correspond pas à un Free Block et quand c’est le cas, d’aller directement à la fin de celle-ci et recommencer. La fonction mem_init initialise le HEAD global et crée le premier Free Block dont la taille correspond à l’espace global de mémoire que l’on a choisie moins la place que prend le HEAD et la métadonnée size. Nous avons codé une fonction get_fb_prev(fb) qui prend en paramètre un Free Block et renvoie le précédent dans la chaine ou NULL si c’est la tête. Nous l’utilisons dans les fonctions mem_alloc et mem_free. 
+
+De plus, tout les fits ont été implémenté : first, best et worst
+
+Pour les tests, nous avons utiliser memshell. Voici plusieurs jeux de tests :
 
 ### Test 1
 
